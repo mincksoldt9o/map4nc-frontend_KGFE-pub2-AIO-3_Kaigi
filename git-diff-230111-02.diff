@@ -1,0 +1,189 @@
+diff --git a/src/containers/pages/Plan/Careplan/Kaigi/ShussekishaInyou/ShussekishaInyou.tsx b/src/containers/pages/Plan/Careplan/Kaigi/ShussekishaInyou/ShussekishaInyou.tsx
+index a5f672a..b01b542 100644
+--- a/src/containers/pages/Plan/Careplan/Kaigi/ShussekishaInyou/ShussekishaInyou.tsx
++++ b/src/containers/pages/Plan/Careplan/Kaigi/ShussekishaInyou/ShussekishaInyou.tsx
+@@ -489,32 +489,86 @@ console.log('seletedRows-GridIndex using toDataGridIndexNumberArray in Shussekis
+   //   ];
+   // }, []);
+ 
+-  const inyouShussekishaData: GridColumnData[] = React.useMemo((): GridColumnData[] => {
+-    return [
+-      {
+-        "dataId": "1",
+-        "shozoku": "shozoku1SelectUser",
+-        "name": "name1SelectUser"
+-      },
+-      {
+-        "dataId": "2",
+-        "shozoku": "shozoku2SelectUser",
+-        "name": "name2SelectUser"
+-      },
+-	  {
+-        "dataId": "1",
+-        "shozoku": "shozoku1LoginStaff",
+-        "name": "name1LoginStaff"
+-      },
+-      {
+-        "dataId": "2",
+-        "shozoku": "shozoku2LoginStaff",
+-        "name": "name2LoginStaff"
+-      },
+-    ];
+-  }, []);
++  // rightGridData 
++
++
++  //## 1, binding-change rightGrid's gridData to inyouShussekishaData:
++//can use useMemo to binding a List (array) to a variable gridData, so a a List change => gridData change 
++
++
++
++  // let inyouShussekishaData: GridColumnData[] = React.useMemo((): GridColumnData[] => {
++  //   return [
++  //     {
++  //       "dataId": "1",
++  //       "shozoku": "shozoku1SelectUser",
++  //       "name": "name1SelectUser"
++  //     },
++  //     {
++  //       "dataId": "2",
++  //       "shozoku": "shozoku2SelectUser",
++  //       "name": "name2SelectUser"
++  //     },
++	//   {
++  //       "dataId": "1",
++  //       "shozoku": "shozoku1LoginStaff",
++  //       "name": "name1LoginStaff"
++  //     },
++  //     {
++  //       "dataId": "2",
++  //       "shozoku": "shozoku2LoginStaff",
++  //       "name": "name2LoginStaff"
++  //     },
++  //   ];
++  // }, []);
+ 
+ 
++let inyouShussekishaDataArray = [
++  {
++    "dataId": "1",
++    "shozoku": "shozoku1SelectUser",
++    "name": "name1SelectUser"
++  },
++  {
++    "dataId": "2",
++    "shozoku": "shozoku2SelectUser",
++    "name": "name2SelectUser"
++  },
++{
++    "dataId": "1",
++    "shozoku": "shozoku1LoginStaff",
++    "name": "name1LoginStaff"
++  },
++  {
++    "dataId": "2",
++    "shozoku": "shozoku2LoginStaff",
++    "name": "name2LoginStaff"
++  },
++];
++
++
++  let inyouShussekishaData: GridColumnData[] = React.useMemo((): GridColumnData[] => {
++    return inyouShussekishaDataArray.map((od) => {
++      return {
++        ...od,
++      };
++    });
++  }, [inyouShussekishaDataArray]);
++  // => I will apply for rightGridData array 
++
++  console.log('inyouShussekishaData after useMemo and map: ', inyouShussekishaData)
++  
++
++  // const gridData: GridColumnData[] = React.useMemo((): GridColumnData[] => {
++  //   return inyouShussekishaData.map((od) => {
++  //     return {
++  //       ...od,
++  //     };
++  //   });
++  // }, [inyouShussekishaData]);
++  
++  // // => I will apply for rightGridData array 
++
+   const inyouShussekishaDataGridValues = useEditableDataGrid<GridColumnData>({
+     defaultData: inyouShussekishaData,
+     draggable: true,
+@@ -651,26 +705,65 @@ console.log('seletedRows-GridIndex using toDataGridIndexNumberArray in Shussekis
+     if (selectedRowsKeysArray.length === 0) {
+       return null;
+     }
+-    return kakoShussekishaData.filter(row => selectedRowsKeysArray[row.dataId]);
++    // return kakoShussekishaData.filter(row => selectedRowsKeysArray[row.dataId]);
++    //return kakoShussekishaData.filter(row => selectedRowsKeysArray.includes(row.dataId));
++    return kakoShussekishaData.filter(row => selectedRowsKeysArray.includes(Number(row.dataId)));
+   };
+   
+ 
+ 
+ const handleClickMove = () => {
+    console.log("Move button is clicked");
+-// not need custom function getSelectedRows() any more 
+-//   const selectedRows = getSelectedRows();
+-//   console.log("selectedRows: ", selectedRows);
++
++   const selectedRows = getSelectedRows();
++   console.log("selectedRows using getSelectedRows: ", selectedRows);
+ 
+ 
+    if (!selectedRows) {
+      return;
+    }
+-  //  const rowsToAdd = selectedRows.filter(row => {
+-  //    return !kakoShussekishaDataLoginStaff.some(existingRow => existingRow.dataId === row.dataId);
+-  //  });
+-  //  setkakoShussekishaDataLoginStaffData((prevData: any[]) => prevData.concat(rowsToAdd));
++
++    // const rowsToAdd = selectedRows.filter(row => {
++    //   //return !kakoShussekishaData.some(existingRow => existingRow.dataId === row.dataId);
++    //   return !kakoShussekishaData.some(existingRow => Number(existingRow.dataId) === Number(row.dataId));
++    // });
++    // console.log('rowsToAdd :', rowsToAdd);
++
++    // insight : rowsToAdd is not equal selectedRows but exlucdes existing rows in RightGrid, can do later
++
++      //  const rowsToAdd = selectedRows.filter(row => {
++      //      return !rightGridData.some(existingRow => existingRow.dataId === row.dataId);
++      //    });
++      //   setRightGridData(prevData => prevData.concat(rowsToAdd));
++
++   // concat 2 arrays:
++   inyouShussekishaData = inyouShussekishaData.concat(selectedRows);
++   //const combinedArray = [...inyouShussekishaData, ...selectedRows];
++   //const inyouShussekishaData = [...inyouShussekishaData, ...selectedRows];
++   console.log('inyouShussekishaData after concat: ', inyouShussekishaData);
++
++    //kakoShussekishaData((prevData: any[]) => prevData.concat(rowsToAdd));
++    //kakoShussekishaData((prevData: any[]) => prevData.concat(selectedRows));
++
++
++
+ };
++
++
++// The useEffect hook can be used to bind the value of inyouShussekishaData to the rightGrid inyouShussekishaColumns. This can be done by passing the inyouShussekishaData as an argument to the useEffect hook, and then setting the rightGrid inyouShussekishaColumns equal to the inyouShussekishaData.
++
++// The code would look something like this:
++
++// React.useEffect(() => {
++// setRightGrid(inyouShussekishaData);
++// }, [inyouShussekishaData]);
++
++// In addition to setting the rightGrid inyouShussekishaColumns to the inyouShussekishaData, you can also add additional functionality to the useEffect hook, such as a TextColumnFilter to filter the data, or a RadioButton to select a single row.
++
++// The useEffect hook will run every time the inyouShussekishaData changes, and will update the rightGrid inyouShussekishaColumns accordingly. This will ensure that the rightGrid inyouShussekishaColumns always contains the most up-to-date data from the inyouShussekishaData.
++
++
++
+ //@@@
+ 
+ 
