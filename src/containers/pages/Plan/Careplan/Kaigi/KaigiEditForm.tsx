@@ -3,8 +3,6 @@ import { RootState, useTypedSelector } from '@my/stores';
 import screenIDs from '@my/screenIDs';
 import UseEffectAsync from '@my/utils/UseEffectAsync';
 import React from 'react';
-
-// import { PlanKeikakushoKanri, PlanKyotakuServiceKeikakusho1, PlanKyotakuServiceKeikakusho1RegisterData } from 'maps4nc-frontend-web-api/dist/lib/model';
 import { PlanKeikakushoKanri, PlanServiseTantoushaKaigi, CarePlanKaigiUpdateData } from 'maps4nc-frontend-web-api/dist/lib/model';
 
 import usePutKaigi from '@my/action-hooks/plan/careplan/kaigi/usePutKaigi';
@@ -27,7 +25,7 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
 
   const fetchKaigi = useFetchKaigi(screenIDs.L1240_01.id); // GET 
   const putKaigi = usePutKaigi(screenIDs.L1240_01.id); // UPDATE = GET + PUT
-  const fetchPastShussikisha = useFetchPastShussikisha(screenIDs.L1240_01.id); // GET
+
 
   const clearCareplanHeader = useClearCareplanHeader();
   const clearKaigi = useClearKaigi();
@@ -83,8 +81,6 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
 
   //
 
-//   PUT - request-body : CarePlanKaigiUpdateData = object(planKeikakushoKanri, planServiceTantoushaKaigi)
-
 // PUT - response-body: PlanSeriseTantousshaKaigiKey
 
   const riyoushaKihon = useTypedSelector((state: RootState) => state.kaigi.riyoushaKihon);
@@ -95,8 +91,9 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
 
   const loadingStatus = useTypedSelector((state: RootState) => state.kaigi.loadingStatus);
 
-  // debug
+  
   const selectedPlanKeikakushoKanri = useTypedSelector((state: RootState) => state.careplanHeader.selectedPlanKeikakushoKanri);
+  // debug
   console.log('selectedPlanKeikakushoKanri: ', selectedPlanKeikakushoKanri);
   console.log(
     'RootState-careplanHeader: ',
@@ -104,20 +101,6 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
   );
 
   const notLoaded = loadingStatus !== 'Loaded';
-
-  // React.useEffect(
-  //   UseEffectAsync.make(async () => {
-  //     if (notLoaded) {
-  //       await fetchKaigi(
-  //         selectedPlanKeikakushoKanri?.info?.officeServiceKindSeq || 0,
-  //         selectedPlanKeikakushoKanri?.info?.riyoushaSeq || 0,
-  //         selectedPlanKeikakushoKanri?.info?.keikakushoShubetsu || '',
-  //         selectedPlanKeikakushoKanri?.info?.keikakushoSeq || 0
-  //       );
-  //     }
-  //   }),
-  //   [fetchKaigi, selectedPlanKeikakushoKanri, riyoushaSeq, notLoaded]
-  // );
 
   // Get key points
   React. useEffect(
@@ -135,29 +118,40 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
   );
 
 
-    // Get past shussikisha 
-    React. useEffect(
-      UseEffectAsync. make(async () => {
-        if (notLoaded) {
-          await fetchPastShussikisha(
-            selectedPlanKeikakushoKanri?.info?.riyoushaSeq || 0,
-          );
-        }
-      }),
-      [fetchPastShussikisha, selectedPlanKeikakushoKanri, riyoushaSeq, notLoaded]
-    );
+//   //TODO : add "kind" variable to kaigiStore , 
+//   // - then using useTypedSelector-hook to get this data, 
+//   // - and using an using action-hook to set this data, sync from RadioButtonField
+//   // - "kind" variable only have 2 values : 1 or 2; defualt is 1.
+//   // - if kind === 1 => do user things
+//   // - if kind === 2 => do staff things
+//   // - this "kind" variable later can pass from KaigiEditForm to KaigiInputForm to PastShessukisha through props
 
+const fetchPastShussikisha = useFetchPastShussikisha(screenIDs.L1240_01.id); // GET
 
-  // debug onSubmit simple function
-  // const onSubmit = async (data: KaigiInputFormType) => {
-  //     // eslint-disable-next-line no-console
-  //     console.log('onSubmit called');
-  //     console.log('data on KaigiEditForm -> ', data);
+// // mock:  set kind static-data for mocking data
+// // const kind = 1;
 
-  //   // eslint-disable-next-line no-console
-  //   console.log('KaigiEditForm render 01');
-  //   console.log('onSubmit called after render 01');
-  // }
+//   // get kind dynamic-data from KaigiStore
+//   const kind = useTypedSelector(
+//     (state: RootState) => state.kaigi.kind
+//   );
+//   console.log("kind from KaigiEditForm.tsx :", kind)
+  
+  
+
+//     // Get past shussikisha 
+//     React. useEffect(
+//       UseEffectAsync. make(async () => {
+//         if (notLoaded) {
+//           await fetchPastShussikisha(
+//             selectedPlanKeikakushoKanri?.info?.riyoushaSeq || 0,
+//             kind
+//           );
+//         }
+//       }),
+//       [fetchPastShussikisha, selectedPlanKeikakushoKanri, riyoushaSeq, kind, notLoaded]
+//     );
+
 
   // (編集用) 登録ボタン押下時
   const onSubmit = async (data: KaigiInputFormType) => {
@@ -444,7 +438,7 @@ const KaigiEditForm: React.FC<Props> = (props: Props) => {
   // eslint-disable-next-line no-console
   console.log('KaigiEditForm render 01');
 
-  return <KaigiInputForm id={`${id}-edit`} isReadonly={isReadonly} defaultValues={defaultValues} onSubmit={onSubmit} />;
+  return <KaigiInputForm id={`${id}-edit`} isReadonly={isReadonly} defaultValues={defaultValues} riyoushaSeq={riyoushaSeq} onSubmit={onSubmit} />;
 };
 
 export default KaigiEditForm;

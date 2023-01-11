@@ -32,6 +32,7 @@ export type Props = {
   id: string;
   isReadonly: boolean;
   defaultValues?: KaigiInputFormType;
+  riyoushaSeq: number;
   onSubmit: (data: KaigiInputFormType) => Promise<void>;
 };
 
@@ -127,7 +128,16 @@ export const kaigiInputFormSchema = yup.object({
 // start of ShussekisaTable aka attendees-citation Table
 const shozokuNameColumns = [{ key: 'shozokuNameColumn1' }, { key: 'shozokuNameColumn2' }, { key: 'shozokuNameColumn3' }];
 const shozokuNameRows = [{ key: 'shozokuNameRow1' }, { key: 'shozokuNameRow2' }, { key: 'shozokuNameRow3' }];
-const ShussekishaTable: React.FC = () => {
+
+export type PropsShussekishaTable = {
+  riyoushaSeq: number;
+};
+
+const ShussekishaTable: React.FC<PropsShussekishaTable> = (props: PropsShussekishaTable) => {
+  // const KaigiInputForm: React.FC<Props> = (props: Props) => {
+  //   const { id, isReadonly, defaultValues, riyoushaSeq, onSubmit } = props;  
+  const { riyoushaSeq }  = props;
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleClickShussekishaInyou = () => {
@@ -135,7 +145,7 @@ const ShussekishaTable: React.FC = () => {
   };
   return (
     <>
-      {isDialogOpen && <ShussekishaInyou setIsDialogOpen={setIsDialogOpen} />}
+      {isDialogOpen && <ShussekishaInyou setIsDialogOpen={setIsDialogOpen} riyoushaSeq={riyoushaSeq} />}
       <HeaderCell component="th" width="10%">
         会議出席者
         <br />
@@ -202,7 +212,7 @@ const ShussekishaTable: React.FC = () => {
  * L1240-01.居宅サービス計画書(1)
  */
 const KaigiInputForm: React.FC<Props> = (props: Props) => {
-  const { id, isReadonly, defaultValues, onSubmit } = props;
+  const { id, isReadonly, defaultValues, riyoushaSeq, onSubmit } = props;
 
   const clearApiMessage = useClearApiMessage();
 
@@ -242,6 +252,8 @@ const KaigiInputForm: React.FC<Props> = (props: Props) => {
 
 
   const handleSubmitForm = handleSubmit(async (data) => {
+    console.log('inside handleSubmitForm');
+    console.log('riyoushaSeq: ', riyoushaSeq);
     console.log('data form: ', data);
     clearApiMessage(screenIDs.L1240_01.id);
     //if (onSubmit){
@@ -295,7 +307,7 @@ const KaigiInputForm: React.FC<Props> = (props: Props) => {
             <TableBody>
               {/* １行目 */}
               <TableRow>
-                <ShussekishaTable />
+                <ShussekishaTable riyoushaSeq={riyoushaSeq}/>
               </TableRow>
               {/* 2行目 */}
               <TableRow>
